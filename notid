@@ -135,28 +135,6 @@ def next_notification(pop = False):
         else:
             return notification_queue[0]
 
-def get_statustext(notification = ''):
-    output = ''
-    try:
-        if not notification:
-            command = STATUS_COMMAND
-        else:
-            command = STATUS_COMMAND + [notification]
-
-        p = subprocess.Popen(command, stdout=subprocess.PIPE)
-
-        output = p.stdout.read()
-    except:
-        sys.stderr.write("%s: could not read status message (%s)\n"
-                         % (sys.argv[0], ' '.join(STATUS_COMMAND)))
-
-    # Error - STATUS_COMMAND didn't exist or delivered empty result
-    # Fallback to notification only
-    if not output:
-        output = notification
-
-    return output
-
 def message_thread(dummy):
     last_status_update = 0
     last_notification_update = 0
@@ -172,7 +150,6 @@ def message_thread(dummy):
                 update_status = True
 
             elif current_time > last_notification_update + notif[2]:
- 
                 # Pop expired notification
                 next_notification(True)
                 notif = next_notification()
@@ -186,14 +163,9 @@ def message_thread(dummy):
         if update_status:
             if notif:
                 current_notification_text = notif[1]
-            else:
-                current_notification_text = ''
 
-            if USE_STATUSTEXT:
-                update_text(get_statustext(current_notification_text))
-            else:
-                if current_notification_text != '':
-                    update_text(current_notification_text)
+            if current_notification_text != '':
+                update_text(current_notification_text)
 
             last_status_update = current_time
 
