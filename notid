@@ -129,11 +129,10 @@ def next_notification(pop = False):
         # If there are several pending messages, discard the first 0-timeouts
         while len(notification_queue) > 1 and notification_queue[0][2] == 0:
             notification_queue.pop(0)
-
-        if pop:
-            return notification_queue.pop(0)
-        else:
-            return notification_queue[0]
+        
+        current_notification = notification_queue[0]
+        notification_queue.pop(0)
+        return current_notification
 
 def message_thread(dummy):
     last_status_update = 0
@@ -141,33 +140,13 @@ def message_thread(dummy):
     current_notification_text = ''
 
     while 1:
-        notif = next_notification()
-        current_time = time.time()
-        update_status = False
-
+        notif = next_notification(True)
+        
         if notif:
-            if notif[1] != current_notification_text:
-                update_status = True
+            current_notification_text = notif[1]
 
-            elif current_time > last_notification_update + notif[2]:
-                # Pop expired notification
-                next_notification(True)
-                notif = next_notification()
-
-            if update_status == True:
-                last_notification_update = current_time
-
-        if current_time > last_status_update + STATUS_UPDATE_INTERVAL:
-            update_status = True
-
-        if update_status:
-            if notif:
-                current_notification_text = notif[1]
-
-            if current_notification_text != '':
-                update_text(current_notification_text)
-
-            last_status_update = current_time
+        if current_notification_text != '':
+            update_text(current_notification_text)
 
         time.sleep(0.1)
 def get_help()
