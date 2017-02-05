@@ -189,7 +189,7 @@ class NotificationFetcher(dbus.service.Object):
 
     @dbus.service.method("org.freedesktop.Notifications", in_signature='', out_signature='ssss')
     def GetServerInformation(self):
-      return ("statnot", "http://code.k2h.se", "0.0.2", "1")
+        return ("NotiD", "TELunus", "0.0.2", "1")
 
 if __name__ == '__main__':
     for curarg in sys.argv[1:]:
