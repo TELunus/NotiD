@@ -126,13 +126,9 @@ def next_notification(pop = False):
         return None
 
     with notification_queue_lock:
-        if QUEUE_NOTIFICATIONS:
-            # If there are several pending messages, discard the first 0-timeouts
-            while len(notification_queue) > 1 and notification_queue[0][2] == 0:
-                notification_queue.pop(0)
-        else:
-            while len(notification_queue) > 1:
-                notification_queue.pop(0)
+        # If there are several pending messages, discard the first 0-timeouts
+        while len(notification_queue) > 1 and notification_queue[0][2] == 0:
+            notification_queue.pop(0)
 
         if pop:
             return notification_queue.pop(0)
@@ -176,14 +172,7 @@ def message_thread(dummy):
                 update_status = True
 
             elif current_time > last_notification_update + notif[2]:
-                # If requested timeout is zero, notification shows until
-                # a new notification arrives or a regular status mesasge
-                # cleans it
-                # This way is a bit risky, but works. Keep an eye on this
-                # when changing code
-                if notif[2] != 0:
-                    update_status = True
-
+ 
                 # Pop expired notification
                 next_notification(True)
                 notif = next_notification()
@@ -209,6 +198,7 @@ def message_thread(dummy):
             last_status_update = current_time
 
         time.sleep(0.1)
+
 
 class NotificationFetcher(dbus.service.Object):
     _id = 0
