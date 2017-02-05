@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#
+#   NotiD is based on:
 #   statnot - Status and Notifications
 #
 #   Lightweight notification-(to-become)-deamon intended to be used
