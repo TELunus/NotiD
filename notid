@@ -52,11 +52,8 @@ STATUS_COMMAND = ["/bin/sh", "%s/.statusline.sh" % os.getenv("HOME")]
 USE_STATUSTEXT=True
 QUEUE_NOTIFICATIONS=True
 
-# dwm
 def update_text(text):
-    # Get first line
-    first_line = text.splitlines()[0] if text else ''
-    subprocess.call(["xsetroot", "-name", first_line])
+    print(text)
 
 # ===== CONFIGURATION END =====
 
@@ -120,10 +117,10 @@ def add_notification(notif):
 
         notification_queue.append(notif)
 
-def next_notification(pop = False):
+def next_notification():
     # No need to be thread safe here. Also most common scenario
     if not notification_queue:
-        return None
+        return False
 
     with notification_queue_lock:
         # If there are several pending messages, discard the first 0-timeouts
@@ -140,13 +137,12 @@ def message_thread(dummy):
     current_notification_text = ''
 
     while 1:
-        notif = next_notification(True)
+        notif = next_notification()
         
         if notif:
             current_notification_text = notif[1]
-
-        if current_notification_text != '':
-            update_text(current_notification_text)
+            if current_notification_text != '':
+                update_text(current_notification_text)
 
         time.sleep(0.1)
 def get_help()
