@@ -126,7 +126,7 @@ def next_notification():
         # If there are several pending messages, discard the first 0-timeouts
         while len(notification_queue) > 1 and notification_queue[0][2] == 0:
             notification_queue.pop(0)
-        
+
         current_notification = notification_queue[0]
         notification_queue.pop(0)
         return current_notification
@@ -138,16 +138,16 @@ def message_thread(dummy):
 
     while 1:
         notif = next_notification()
-        
+
         if notif:
             current_notification_text = notif[1]
             if current_notification_text != '':
                 update_text(current_notification_text)
 
         time.sleep(0.1)
-def get_help()
+def get_help():
     help_filename = "help.txt"
-    with open(help_filename) as help_file
+    with open(help_filename) as help_file:
         print help_file.read()
 
 class NotificationFetcher(dbus.service.Object):
@@ -215,4 +215,3 @@ if __name__ == '__main__':
 
     while 1:
         context.iteration(True)
-
