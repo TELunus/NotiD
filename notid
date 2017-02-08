@@ -171,14 +171,18 @@ class notification:
             result += u'\n'
         return result
 
+    def print_val(self,value):
+        if (isinstance(value,int)==True):
+            converter = int(value)
+            return unicode(converter)
+        return unicode(value)
+
     def get_hints(self):
         result = u''
         if (len(self.hints[0]) > 0):
             result += u'hints:'
-            print(result,len(self.hints[0]))
-            print(self.hints[0])
             for key, item in self.hints[0].items():
-                result += unicode(key) + u' = ' + unicode(item) + u', '
+                result += unicode(key) + u' = ' + self.print_val(item) + u', '
             result += u'\n'
         return result
 
@@ -200,7 +204,7 @@ class NotificationFetcher(dbus.service.Object):
 
     @dbus.service.method(u'org.freedesktop.Notifications',
                          in_signature=u'susssasa{ss}i',
-                         out_signature=u'u',utf8_strings=True)
+                         out_signature=u'u',byte_arrays=True,utf8_strings=True)
     def Notify(self, app_name, notification_id, app_icon,
                summary, body, actions, hints, expire_timeout):
         if (expire_timeout < 0) or (expire_timeout > MAX_NOTIFY_TIMEOUT):
