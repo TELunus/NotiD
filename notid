@@ -164,7 +164,7 @@ class notification:
         self.duration = expire_timeout
         self.body = body
         self.actions = actions
-            self.app_icon = app_icon
+        self.app_icon = app_icon
 
     def get_actions(self):
         result = u''
