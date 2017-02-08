@@ -168,9 +168,9 @@ class notification:
 
     def get_actions(self):
         result = u''
-        if (len(self.actions[0]) > 0):
+        if (len(self.actions) > 0):
             result += u'actions:'
-            for index, item in self.actions[0]:
+            for index, item in self.actions:
                 result += unicode(item)
             result += u'\n'
         return result
@@ -183,9 +183,9 @@ class notification:
 
     def get_hints(self):
         result = u''
-        if (len(self.hints[0]) > 0):
+        if (len(self.hints) > 0):
             result += u'hints:'
-            for key, item in self.hints[0].items():
+            for key, item in self.hints.items():
                 result += unicode(key) + u' = ' + self.print_val(item) + u', '
             result += u'\n'
         return result
@@ -245,7 +245,7 @@ class NotificationFetcher(dbus.service.Object):
             result.append(u'icon-static')
         if SUPPORT_SOUND:
             result.append(u'sound')
-        return (u'body')
+        return (result)
 
     @dbus.service.signal(u'org.freedesktop.Notifications', signature=u'uu')
     def NotificationClosed(self, id_in, reason_in):
