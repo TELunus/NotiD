@@ -47,16 +47,21 @@ import re
 
 DEFAULT_NOTIFY_TIMEOUT = 3000 # milliseconds
 MAX_NOTIFY_TIMEOUT = 5000 # milliseconds
-NOTIFICATION_MAX_LENGTH = 100 # number of characters
-STATUS_UPDATE_INTERVAL = 2.0 # seconds
-STATUS_COMMAND = ["/bin/sh", "%s/.statusline.sh" % os.getenv("HOME")]
-USE_STATUSTEXT=True
-QUEUE_NOTIFICATIONS=True
 
-def update_text(text):
-    print(text.__unicode__())
+SUPPORT_BODY=True
+SUPPORT_ACTIONS=False
+SUPPORT_HYPERLINKS=False
+SUPPORT_IMAGES=False
+SUPPORT_MARKUP=False
+SUPPORT_ICON_STATIC=False
+SUPPORT_ICON_MULTI=False
+SUPPORT_SOUND=False
 
 # ===== CONFIGURATION END =====
+
+def update_text(text):
+    print(unicode(text))
+
 
 def _getconfigvalue(configmodule, name, default):
     if hasattr(configmodule, name):
@@ -72,8 +77,7 @@ def readconfig(filename):
         print e
         sys.exit(2)
 
-    for setting in ("DEFAULT_NOTIFY_TIMEOUT", "MAX_NOTIFY_TIMEOUT", "NOTIFICATION_MAX_LENGTH", "STATUS_UPDATE_INTERVAL",
-                    "STATUS_COMMAND", "USE_STATUSTEXT", "QUEUE_NOTIFICATIONS", "update_text"):
+    for setting in ("DEFAULT_NOTIFY_TIMEOUT", "MAX_NOTIFY_TIMEOUT"):
         if hasattr(config, setting):
             globals()[setting] = getattr(config, setting)
 
@@ -155,12 +159,12 @@ class notification:
     def __init__(self,app_name,notification_id,app_icon,summary,body,actions,hints,expire_timeout):
         self.app_name = app_name
         self.id = notification_id
-        self.app_icon = app_icon
         self.summary = summary
-        self.body = body
-        self.actions = actions,
-        self.hints = hints,
+        self.hints = hints
         self.duration = expire_timeout
+        self.body = body
+        self.actions = actions
+            self.app_icon = app_icon
 
     def get_actions(self):
         result = u''
@@ -189,10 +193,13 @@ class notification:
     def __unicode__(self):
         result = u'app:'+unicode(self.app_name)+u'\n'
         result += u'id:'+unicode(self.id)+u'\n'
-        result += u'icon:'+unicode(self.app_icon)+u'\n'
+        if SUPPORT_ICON_MULTI or SUPPORT_ICON_STATIC:
+            result += u'icon:'+unicode(self.app_icon)+u'\n'
         result += u'summary:'+unicode(self.summary)+u'\n'
-        result += u'body:'+unicode(self.body)+u'\n'
-        result += self.get_actions()
+        if SUPPORT_BODY:
+            result += u'body:'+unicode(self.body)+u'\n'
+        if SUPPORT_ACTIONS:
+            result += self.get_actions()
         result += self.get_hints()
         result += u'duration:'+unicode(self.duration)+u'\n'
         return result
@@ -221,6 +228,23 @@ class NotificationFetcher(dbus.service.Object):
 
     @dbus.service.method(u'org.freedesktop.Notifications', in_signature=u'', out_signature=u'as', utf8_strings=True)
     def GetCapabilities(self):
+        result = []
+        if SUPPORT_BODY:
+            result.append(u'body')
+        if SUPPORT_ACTIONS:
+            result.append(u'actions')
+        if SUPPORT_HYPERLINKS:
+            result.append(u'body-hyperlinks')
+        if SUPPORT_IMAGES:
+            result.append(u'body-images')
+        if SUPPORT_MARKUP:
+            result.append(u'body-markup')
+        if SUPPORT_ICON_MULTI:
+            result.append(u'icon-multi')
+        if SUPPORT_ICON_STATIC:
+            result.append(u'icon-static')
+        if SUPPORT_SOUND:
+            result.append(u'sound')
         return (u'body')
 
     @dbus.service.signal(u'org.freedesktop.Notifications', signature=u'uu')
@@ -247,6 +271,39 @@ if __name__ == u'__main__':
         elif curarg in (u'-h', u'--help'):
             get_help()
             sys.exit(1)
+        elif (curarg == u'-m'):
+            SUPPORT_MARKUP=True
+        elif (curarg == u'-M'):
+            SUPPORT_MARKUP=False
+        elif (curarg == u'-b'):
+            SUPPORT_BODY=True
+        elif (curarg == u'-B'):
+            SUPPORT_BODY=False
+        elif (curarg == u'-c'):
+            SUPPORT_ACTIONS=True
+        elif (curarg == u'-C'):
+            SUPPORT_ACTIONS=False
+        elif (curarg == u'-g'):
+            SUPPORT_IMAGES=True
+        elif (curarg == u'-G'):
+            SUPPORT_IMAGES=False
+        elif (curarg == u'-s'):
+            SUPPORT_SOUND=True
+        elif (curarg == u'-S'):
+            SUPPORT_SOUND=False
+        elif (curarg == u'-l'):
+            SUPPORT_HYPERLINKS=True
+        elif (curarg == u'-L'):
+            SUPPORT_HYPERLINKS=False
+        elif (curarg == u'-i'):
+            SUPPORT_ICON_MULTI=False
+            SUPPORT_ICON_STATIC=True
+        elif (curarg == u'-a'):
+            SUPPORT_ICON_MULTI=True
+            SUPPORT_ICON_STATIC=False
+        elif (curarg == u'-x'):
+            SUPPORT_ICON_MULTI=False
+            SUPPORT_ICON_STATIC=False
         else:
             readconfig(curarg)
 
