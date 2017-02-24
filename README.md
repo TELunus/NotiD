@@ -1,5 +1,3 @@
-# THIS IS A WORK IN PROGRESS, IT DOESN'T ACTUALLY DO WHAT IT SAYS IT DOES (YET)!
-
 # NotiD
 NoitD is a daemon that prints notifications from the [Desktop Notifications](http://www.galago-project.org/specs/notification/0.9/index.html) speficiation to it's STDOUT.
 
