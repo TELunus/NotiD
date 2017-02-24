@@ -2,9 +2,6 @@
 NoitD is a daemon that prints notifications from the [Desktop Notifications](http://www.galago-project.org/specs/notification/0.9/index.html) speficiation to it's STDOUT.
 
 NotiD is forked from [statnot](http://github.com/halhen/statnot/) by [Henrik Lindberg](https://github.com/halhen)
-
-Distribution specific links:
-
 ## Background
 An old piece of UNIX philosophy is that each program should do exactly one thing well, then you can connect multiple programs together to create advanced functionality in a versitile way.  However most notification daemons want to do two things:
 
